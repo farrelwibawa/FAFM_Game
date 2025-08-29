@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FAFM Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg: #0b0f19;
+  --surface: #121829;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --primary: #5865f2;
+  --card: #0f1629;
+  --border: #1f2937;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+:root.light {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --primary: #3b82f6;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --shadow: 0 10px 24px rgba(2,6,23,.08);
+}
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background: var(--bg);
+  color: var(--text);
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 24px }
+header {
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(12px);
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.bar { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 16px 24px }
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: .3px }
+.brand .logo { max-height: 40px; width: auto; border-radius: 6px; object-fit: contain; }
+.search { display: flex; gap: 10px; align-items: center }
+.search input, select {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  outline: none;
+}
+.search input { min-width: 340px }
+.btn {
+  background: var(--primary);
+  color: white; border: 0; padding: 12px 16px; border-radius: 12px; cursor: pointer; font-weight: 600;
+  box-shadow: 0 8px 18px color-mix(in oklab, var(--primary) 40%, transparent);
+}
+.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); box-shadow: none }
+.grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px }
+@media (max-width: 1200px) { .grid { grid-template-columns: repeat(4, 1fr) } }
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr) } .search input{ min-width: 240px } }
+@media (max-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr) } .bar{ grid-template-columns: 1fr; gap: 14px } }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden; box-shadow: var(--shadow);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.card:hover { transform: translateY(-4px) }
+.thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; background: #0b1220 }
+.card-body { padding: 12px }
+.title { font-weight: 700; font-size: 14px; line-height: 1.35; margin: 2px 0 8px }
+.meta { color: var(--muted); font-size: 12px; display:flex; gap:8px; align-items:center }
+.pill { font-size: 11px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 999px }
+.row { display: flex; gap: 10px; align-items: center; justify-content: space-between }
+.fav-btn { border: 1px solid var(--border); background: transparent; color: var(--text); padding: 8px 10px; border-radius: 10px; cursor: pointer }
+.fav-btn.active { background: color-mix(in oklab, var(--primary) 20%, transparent); border-color: var(--primary) }
+h2 { margin: 24px 0 12px }
+dialog { border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 16px; width: min(880px, 92vw); padding: 0; box-shadow: var(--shadow) }
+.modal-head { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border) }
+.modal-body { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px }
+.modal-body img { width: 100%; border-radius: 12px; border: 1px solid var(--border) }
+.close { background: transparent; border: 0; color: var(--muted); font-size: 22px; cursor: pointer }
+.desc { color: var(--muted); font-size: 14px; line-height: 1.6; white-space: pre-line; max-height: 240px; overflow:auto }
+.req { font-size: 13px; border: 1px dashed var(--border); border-radius: 12px; padding: 10px; color: var(--muted) }
+footer { color: var(--muted); font-size: 12px; text-align: center; padding: 24px }
+a { color: var(--primary); text-decoration: none }
+  </style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand">
+      <img src="assets/logo.png" alt="Logo FAFM" class="logo">
+      <div>FAFM Game</div>
+    </div>
+    <div class="search">
+      <input id="searchInput" type="search" placeholder="Cari game... (mis. &quot;Elden Ring&quot;)" />
+      <select id="genreSelect"><option value="">Semua Genre</option></select>
+      <button id="searchBtn" class="btn">Cari</button>
+      <button id="toggleTheme" class="btn ghost" title="Dark / Light">🌓</button>
+    </div>
+    <div class="row" style="justify-content:flex-end; gap:8px">
+      <button id="showFavs" class="btn ghost">Favorit</button>
+    </div>
+  </div>
+</header>
+
+  <main class="container">
+    <section id="sec-trending">
+      <h2>🔥 Trending</h2>
+      <div id="trending" class="grid"></div>
+    </section>
+
+    <section id="sec-results" style="margin-top:28px">
+      <h2>🎮 Hasil Pencarian</h2>
+      <div id="results" class="grid"></div>
+    </section>
+
+    <section id="sec-favorites" style="margin-top:28px">
+      <h2>⭐ Game Favorit Anda</h2>
+      <div id="favorites" class="grid"></div>
+    </section>
+  </main>
+
+  <dialog id="gameModal">
+    <div class="modal-head">
+      <strong id="modalTitle">Detail Game</strong>
+      <button class="close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <img id="modalImg" alt="cover" />
+      <div>
+        <div id="modalGenres" class="meta" style="margin: 6px 0 8px"></div>
+        <p id="modalDesc" class="desc"></p>
+        <div id="modalReq" class="req"></div>
+      </div>
+    </div>
+  </dialog>
+
+  <footer>
+    Copyright © 2025 FAFM Game Company. All rights reserved.
+  </footer>
+
+  <script>
+    const RAWG_API_KEY = "4690aab28764446ab959470bffcf700c";
+    const RAWG_BASE = "https://api.rawg.io/api";
+
+    function applyThemeSync(mode) {
+      const root = document.documentElement;
+      if (mode === 'light') root.classList.add('light');
+      else root.classList.remove('light');
+      localStorage.setItem('theme', mode);
+    }
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    applyThemeSync(savedTheme);
+    document.getElementById('toggleTheme').addEventListener('click', () => {
+      const mode = document.documentElement.classList.contains('light') ? 'dark' : 'light';
+      applyThemeSync(mode);
+    });
+
+    const qs = s => document.querySelector(s);
+    const formatDate = d => new Date(d).toLocaleDateString('id-ID',{year:'numeric',month:'short',day:'numeric'});
+    const debounce = (fn, wait=400)=>{ let t; return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),wait);}}; 
+
+    const FavStore = {
+      key: 'fav_games_v1',
+      all() { return JSON.parse(localStorage.getItem(this.key) || '[]'); },
+      has(id) { return this.all().includes(id); },
+      add(id) { const s = new Set(this.all()); s.add(id); localStorage.setItem(this.key, JSON.stringify([...s])); },
+      remove(id) { const s = new Set(this.all()); s.delete(id); localStorage.setItem(this.key, JSON.stringify([...s])); }
+    };
+
+    async function fetchJSON(url){const r=await fetch(url);if(!r.ok)throw new Error('Network');return r.json();}
+    async function getTrending(){
+      const t=new Date();const l=new Date(t.getTime()-30*86400000);
+      const dates=`${l.toISOString().slice(0,10)},${t.toISOString().slice(0,10)}`;
+      return (await fetchJSON(`${RAWG_BASE}/games?key=${RAWG_API_KEY}&dates=${dates}&ordering=-added&page_size=12`)).results||[];
+    }
+    async function searchGames({query='',genre=''}) {
+      const p=new URLSearchParams({key:RAWG_API_KEY,search:query,page_size:24});
+      if(genre)p.set('genres',genre);
+      return (await fetchJSON(`${RAWG_BASE}/games?${p}`)).results||[];
+    }
+    async function getGameDetails(id){return fetchJSON(`${RAWG_BASE}/games/${id}?key=${RAWG_API_KEY}`);}
+    async function loadGenres(){return fetchJSON(`${RAWG_BASE}/genres?key=${RAWG_API_KEY}`);}
+
+    function gameCard(g){
+      const {id,name,background_image,rating,released,genres=[]}=g;
+      const fav=FavStore.has(id)?'active':''; 
+      const genreLabel=genres.map(x=>x.name).slice(0,2).join(' • ');
+      return `<article class="card" data-id="${id}">
+        <img class="thumb" src="${background_image||''}" alt="${name}" onerror="this.src='https://placehold.co/600x338?text=No+Image'"/>
+        <div class="card-body">
+          <div class="title">${name}</div>
+          <div class="meta">
+            <span class="pill">★ ${rating??'—'}</span>
+            <span>${released?formatDate(released):'TBA'}</span>
+            <span class="pill">${genreLabel||'—'}</span>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn ghost more" data-id="${id}">Detail</button>
+            <button class="fav-btn ${fav}" data-id="${id}">❤</button>
+          </div>
+        </div>
+      </article>`;
+    }
+    function renderGrid(el,items){el.innerHTML=items.map(gameCard).join('');}
+    async function openModal(id){
+      try{
+        const d=await getGameDetails(id);
+        qs('#modalTitle').textContent=d.name;
+        qs('#modalImg').src=d.background_image||d.background_image_additional||'https://placehold.co/800x450?text=No+Image';
+        qs('#modalGenres').innerHTML=(d.genres||[]).map(x=>`<span class='pill'>${x.name}</span>`).join('')||'<span class="pill">—</span>';
+        qs('#modalDesc').textContent=d.description_raw||'Tidak ada deskripsi.';
+        const req=(d.platforms||[]).map(p=>{
+          const n=p.platform?.name;const r=p.requirements_en?.minimum||p.requirements?.minimum||'';
+          return r?`• <b>${n}</b>\n${r}`:'';}).filter(Boolean).join('\n\n');
+        qs('#modalReq').innerHTML=req?req.replaceAll('\n','<br>'):'Minimum requirements tidak tersedia.';
+        document.getElementById('gameModal').showModal();
+      }catch(e){alert('Gagal memuat detail');}
+    }
+
+    document.getElementById('modalClose').addEventListener('click',()=>document.getElementById('gameModal').close());
+    document.getElementById('searchBtn').addEventListener('click',doSearch);
+    document.getElementById('searchInput').addEventListener('input',debounce(doSearch,500));
+    document.getElementById('genreSelect').addEventListener('change',doSearch);
+
+    // 🔥 Fix: scroll ke bagian Favorit
+    document.getElementById('showFavs').addEventListener('click', () => {
+      renderFavorites();
+      document.getElementById('sec-favorites').style.display = ''; // pastikan favorit muncul
+      document.getElementById('favorites').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    document.addEventListener('click',(e)=>{
+      if(e.target.matches('.more'))openModal(e.target.dataset.id);
+      if(e.target.matches('.fav-btn')){
+        const id=Number(e.target.dataset.id);
+        if(FavStore.has(id))FavStore.remove(id);else FavStore.add(id);
+        e.target.classList.toggle('active');renderFavorites();
+      }
+      if(e.target.closest('.card')){
+        const isButton=e.target.matches('button');if(!isButton){
+          const id=e.target.closest('.card').dataset.id;openModal(id);
+        }
+      }
+    });
+
+    async function doSearch(){
+      const q=qs('#searchInput').value.trim();
+      const g=qs('#genreSelect').value;
+      const results=await searchGames({query:q,genre:g});
+      renderGrid(document.getElementById('results'),results);
+
+      // sembunyikan/tampilkan section
+      if(q || g){
+        document.getElementById('sec-trending').style.display='none';
+        document.getElementById('sec-favorites').style.display='none';
+      } else {
+        document.getElementById('sec-trending').style.display='';
+        document.getElementById('sec-favorites').style.display='';
+      }
+    }
+
+    async function renderFavorites(){
+      const favIds=FavStore.all();
+      const favSection=document.getElementById('sec-favorites');
+      favSection.style.display=''; // selalu muncul saat dipanggil
+
+      if(!favIds.length){
+        qs('#favorites').innerHTML='<div class="meta">Belum ada favorit.</div>';return;
+      }
+      try {
+        const results = await Promise.all(
+          favIds.map(id => fetchJSON(`${RAWG_BASE}/games/${id}?key=${RAWG_API_KEY}`))
+        );
+        renderGrid(document.getElementById('favorites'), results);
+      } catch (e) {
+        qs('#favorites').innerHTML = '<div class="meta">Gagal memuat favorit.</div>';
+      }
+    }
+
+    (async function init(){
+      try{
+        const data=await loadGenres();
+        (data?.results||[]).forEach(g=>{
+          const opt=document.createElement("option");
+          opt.value=g.slug;opt.textContent=g.name;
+          document.getElementById('genreSelect').appendChild(opt);
+        });
+      }catch(e){console.warn('Gagal memuat genre');}
+      renderGrid(document.getElementById('trending'),await getTrending());
+      renderFavorites();
+      doSearch();
+    })();
+  </script>
+</body>
+</html>
