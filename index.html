@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Tambahkan GSAP CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <style>
     :root {
@@ -56,10 +56,16 @@
       background: color-mix(in oklab, var(--bg) 92%, transparent);
       padding: 5px 0;
     }
-    .bar { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 16px 24px }
+    .bar { 
+      display: grid; 
+      grid-template-columns: 1fr auto auto; 
+      gap: 12px; 
+      align-items: center; 
+      padding: 16px 24px;
+    }
     .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: .3px }
     .brand .logo { max-height: 40px; width: auto; border-radius: 6px; object-fit: contain; }
-    .search { display: flex; gap: 10px; align-items: center }
+    .search { display: flex; gap: 10px; align-items: center; width: 100% }
     .search input, select {
       background: var(--surface);
       color: var(--text);
@@ -112,7 +118,27 @@
     .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px }
     @media (max-width: 1200px) { .grid { grid-template-columns: repeat(4, 1fr) } }
     @media (max-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr) } .search input{ min-width: 240px } }
-    @media (max-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr) } .bar{ grid-template-columns: 1fr; gap: 14px } }
+    @media (max-width: 640px) { 
+      .grid { grid-template-columns: repeat(2, 1fr) } 
+      .bar { 
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        align-items: stretch;
+      }
+      .search {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search input { 
+        min-width: unset; 
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .bar .row {
+        align-self: flex-end;
+      }
+    }
     .card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -161,15 +187,13 @@
     }
     
     .hero-title {
-      font-size: 4rem;
+      font-size: 4rem; 
       font-weight: 800;
-      margin-left: -115px;
-      white-space: nowrap;
-      padding-bottom: 5px;
-      margin-bottom: 50px;
       line-height: 1.2;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
       letter-spacing: -0.5px;
+      text-align: center;
+      margin: 0 auto 50px auto; 
     }
     
     .hero-subtitle {
@@ -481,73 +505,44 @@
       font-weight: 600;
     }
     
+    @media (max-width: 1200px) { .grid { grid-template-columns: repeat(4, 1fr) } }
+    @media (max-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr) } .search input{ min-width: 240px } }
+    @media (max-width: 640px) { 
+      .grid { grid-template-columns: repeat(2, 1fr) } 
+      .bar{ display:flex; flex-direction: column; gap: 14px }
+    }
     @media (max-width: 968px) {
       .about-content {
         grid-template-columns: 1fr;
         gap: 50px;
       }
-      
-      .about-text {
-        padding-right: 0;
-      }
-      
-      .about-features {
-        grid-template-columns: 1fr;
-      }
-      
-      .stats {
-        justify-content: center;
-        flex-wrap: wrap;
-      }
+      .about-text { padding-right: 0; }
+      .about-features { grid-template-columns: 1fr; }
+      .stats { justify-content: center; flex-wrap: wrap; }
+      .hero-title { font-size: 3rem; }
+      .hero-subtitle { font-size: 1.4rem; }
     }
     
     @media (max-width: 768px) {
-      .hero-title {
-        font-size: 3rem;
-      }
-      
-      .hero-subtitle {
-        font-size: 1.4rem;
-      }
-      
-      .about-title {
-        font-size: 2.5rem;
-      }
-      
-      .about-desc {
-        font-size: 1.1rem;
-      }
-      
-      .stat-number {
-        font-size: 2.5rem;
-      }
+      .hero-title { font-size: 2.5rem; }
+      .hero-subtitle { font-size: 1.2rem; }
+      .about-title { font-size: 2.5rem; }
+      .about-desc { font-size: 1.1rem; }
+      .stat-number { font-size: 2.5rem; }
     }
-
+    
     @media (max-width: 480px) {
-      .hero-title {
-        font-size: 2.5rem;
-      }
-      
-      .hero-subtitle {
-        font-size: 1.2rem;
-      }
-      
-      .about-title {
-        font-size: 2rem;
-      }
-      
-      .stat-number {
-        font-size: 2rem;
-      }
-      
-      .feature {
-        flex-direction: column;
-        text-align: center;
-      }
-      
-      .hero-cta {
-        flex-direction: column;
-      }
+      .hero-title { font-size: 2rem; }
+      .hero-subtitle { font-size: 1rem; }
+      .about-title { font-size: 2rem; }
+      .stat-number { font-size: 2rem; }
+      .feature { flex-direction: column; text-align: center; }
+      .hero-cta { flex-direction: column; }
+    }
+    
+    @media (max-width: 360px) {
+      .hero-title { font-size: 1.5rem; }
+      .hero-subtitle { font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -556,10 +551,9 @@
   <div class="bar">
     <div class="brand">
       <img src="assets/logo.png" alt="Logo FAFM" class="logo">
-      <div>FAFM Game</div>
     </div>
     <div class="search">
-      <input id="searchInput" type="search" placeholder="Cari game... (mis. &quot;Elden Ring&quot;)" />
+      <input id="searchInput" type="search" placeholder="Cari game..." />
       <select id="genreSelect"><option value="">Semua Genre</option></select>
       <button id="searchBtn" class="btn">Cari</button>
       <button id="toggleTheme" class="btn ghost" title="Dark / Light">🌓</button>
@@ -570,7 +564,6 @@
   </div>
 </header>
 
-<!-- Hero Section -->
 <section class="hero" id="hero">
   <div class="hero-bg" id="heroBg"></div>
   <div class="hero-content">
@@ -582,7 +575,6 @@
     </div>
   </div>
   
-  <!-- Floating Icons -->
   <div class="floating-icon" style="top: 20%; left: 10%;">🎮</div>
   <div class="floating-icon" style="top: 70%; left: 5%;">🕹️</div>
   <div class="floating-icon" style="top: 30%; right: 8%;">🎯</div>
@@ -594,8 +586,6 @@
   </div>
 </section>
 
-<!-- About Section -->
-<section id="#about" data-aos="fade-up"></section>
 <section class="about" id="about">
   <div class="container">
     <div class="about-content">
@@ -671,7 +661,6 @@
           <div class="visual-layer layer-3"></div>
         </div>
         
-        <!-- Floating objects will be added by JS -->
         <div id="floatingObjects"></div>
       </div>
     </div>
@@ -796,7 +785,6 @@
 
     document.getElementById('modalClose').addEventListener('click',()=>document.getElementById('gameModal').close());
     document.getElementById('searchBtn').addEventListener('click',doSearch);
-    document.getElementById('searchInput').addEventListener('input',debounce(doSearch,500));
     document.getElementById('genreSelect').addEventListener('change',doSearch);
 
     // 🔥 Fix: scroll ke bagian Favorit
@@ -834,6 +822,13 @@
       const g=qs('#genreSelect').value;
       const results=await searchGames({query:q,genre:g});
       renderGrid(document.getElementById('results'),results);
+      gsap.to(window, {
+      duration: 1, // Durasi animasi gulir dalam detik
+      scrollTo: {
+      y: "#sec-results", // Target elemen
+      offsetY: 80 // Tambahkan offset 80px dari atas
+      }
+      });
 
       // sembunyikan/tampilkan section
       if(q || g){
@@ -933,10 +928,7 @@
       const bgItems = createHeroBackground();
       const floatingIcons = document.querySelectorAll('.floating-icon');
       
-      // Pastikan teks memiliki spasi yang benar
-      document.getElementById('heroTitle').textContent = "Jelajahi Dunia Game Tanpa Batas";
-      
-      // Animasi teks dengan efek berurutan
+      // Animasi teks dengan efek fade-in yang lebih stabil
       gsap.fromTo('#heroTitle', 
         { opacity: 0, y: 50, scale: 0.8 },
         { 
@@ -944,30 +936,7 @@
           y: 0, 
           scale: 1, 
           duration: 1.2, 
-          ease: 'back.out(1.7)',
-          stagger: 0.05
-        }
-      );
-      
-      // Animasi untuk setiap karakter dalam judul
-      const heroTitle = document.getElementById('heroTitle');
-      const titleChars = heroTitle.textContent.split('');
-      heroTitle.innerHTML = titleChars.map(char => 
-        char === ' ' 
-          ? `<span style="display:inline-block; width:0.2em">&nbsp;</span>` 
-          : `<span style="display:inline-block">${char}</span>`
-      ).join('');
-
-      gsap.fromTo('#heroTitle span', 
-        { opacity: 0, y: 30, rotationX: 90 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          rotationX: 0, 
-          duration: 0.6, 
-          stagger: 0.03,
-          ease: 'power3.out',
-          delay: 0.2
+          ease: 'back.out(1.7)'
         }
       );
       
@@ -1291,13 +1260,12 @@
       }catch(e){console.warn('Gagal memuat genre');}
       renderGrid(document.getElementById('trending'),await getTrending());
       renderFavorites();
-      doSearch();
       
       // Jalankan animasi setelah konten utama dimuat
       setTimeout(() => {
         initHeroAnimations();
         initAboutAnimations();
-      }, 300);
+      }, 100);
     })();
   </script>
 </body>
